@@ -21,4 +21,93 @@ Service is initially a product of the Guardian Discussion team.
 
 ## Definition
 
-TO BE ADDED.
+To qualify as a Service requires:
+
+* following certain AWS conventions
+* one-click deploys and stack creation
+* some specific documentation
+* sufficient monitoring and alerting
+
+Harder to quantify, but equally important, if not more so, is:
+
+* a decoupled architecture, including no hard-dependencies (graceful
+  failure)
+
+## Spec
+
+    MUST - required
+    SHOULD - expected but not required
+
+### Naming conventions
+
+The general pattern is:
+
+    [stack]-[app]-[STAGE]
+
+(Clauses separated by hyphens, and the stage capitalised.)
+
+In certain cases, further information may be appended onto the end of
+this pattern as appropriate. For example, a Cloudwatch alarm might be
+called `discussion-search-PROD-disk-util`.
+
+#### S3
+
+S3 names are global. As a result, they should be prefaced with
+`com-gu-discussion`.
+
+Note, '-' is preferred to '.' as a delimiter, because of SSL issues
+(see:
+https://wblinks.com/notes/aws-tips-i-wish-id-known-before-i-started/).
+
+### Tags
+
+Each EC2 instance MUST have the following tags:
+
+* Stack
+* Stage (value is capitalised)
+* Name
+
+### Resources
+
+Each EC2 instance MUST present the following (GET) resources:
+
+    [/healthcheck](#healthcheck)
+    [/gtg](#gtg)
+    [/dependencies](#dependencies)
+
+These resources should be presented on port 8080 (not port 80).
+
+#### <a name="healthcheck">Healthcheck</a>
+
+Is the service running?
+
+#### <a name="gtg">GTG</a>
+
+Is the service able to usefully respond to requests? (Typically, this
+indicates whether the service is running and its dependencies are
+available as expected.)
+
+#### <a name="dependencies">Dependencies</a>
+
+Provides information on service dependencies including current
+availability. (Roughly equivalent to SE4 /healthcheck endpoint.)
+
+### Monitoring and alerting
+
+The following metrics MUST be collected for all instances:
+
+* CPU utilisation (%)
+* Memory usage (%)
+* Disk utilisation (%)
+
+### Timeouts, limits, and dependencies
+
+Requests to a service SHOULD have explicit timeouts configured.
+
+Requests from a service to dependencies SHOULD have explicit timeouts
+configured and be wrapped in a Circuit Breaker.
+
+### Cloudformation and deploys
+
+AMIs MUST be built for each deploy, with any dependencies built
+in. This ensures startup (and so recovery times!) are quick.
