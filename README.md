@@ -71,17 +71,23 @@ Each EC2 instance MUST have the following tags:
 
 Each EC2 instance MUST present the following (GET) resources:
 
-    [/healthcheck](#healthcheck)
-    [/gtg](#gtg)
-    [/dependencies](#dependencies)
+    [/service/healthcheck](#healthcheck)
+    [/service/gtg](#gtg)
+    [/service/dependencies](#dependencies)
 
 These resources should be presented on port 8080 (not port 80).
 
 #### <a name="healthcheck">Healthcheck</a>
 
-Is the service running?
+Is the service running? Two possible responses:
+
+    200 "OK" (service is running)
+    50* (service is down - choose exact status code as appropriate)
 
 #### <a name="gtg">GTG</a>
+
+    200 "OK" (service is able to usefully respond to requests)
+    50* (service is down - choose exact status code as appropriate)
 
 Is the service able to usefully respond to requests? (Typically, this
 indicates whether the service is running and its dependencies are
@@ -91,6 +97,10 @@ available as expected.)
 
 Provides information on service dependencies including current
 availability. (Roughly equivalent to SE4 /healthcheck endpoint.)
+
+See the
+[SE4 healthcheck endpoint](https://github.com/beamly/SE4/blob/1.0/SE4.md#healthcheck)
+definition here.
 
 ### Monitoring and alerting
 
