@@ -40,6 +40,14 @@ Harder to quantify, but equally important, if not more so, is:
 
 ### Naming conventions
 
+Components of names are:
+
+    org   -> the organisation producing the service, e.g. com.gu
+    stack -> conceptual group the app belongs too
+    app   -> the name of the service itself
+    STAGE -> the environment the app is running in (e.g. PROD), must
+             be capitalised
+
 The general pattern is:
 
     [stack]-[app]-[STAGE]
@@ -53,10 +61,11 @@ called `discussion-search-PROD-disk-util`.
 #### S3
 
 S3 names are global. As a result, they should be prefaced with
+`[org]-[stack]`. For the Guardian, this might look like:
 `com-gu-discussion`.
 
-Note, '-' is preferred to '.' as a delimiter, because of SSL issues
-(see:
+Note, '-' is preferred to '.' as a delimiter for bucket names, because
+of SSL issues (see:
 https://wblinks.com/notes/aws-tips-i-wish-id-known-before-i-started/).
 
 ### Tags
@@ -64,8 +73,9 @@ https://wblinks.com/notes/aws-tips-i-wish-id-known-before-i-started/).
 Each EC2 instance MUST have the following tags:
 
 * Stack
-* Stage (value is capitalised)
-* Name
+* App
+* Stage
+* Name (equal to `[stage]:[app]`)
 
 ### Resources
 
@@ -110,6 +120,9 @@ The following metrics MUST be collected for all instances:
 * Memory usage (%)
 * Disk utilisation (%)
 
+Metrics MUST be stored in a central location. Typically, this SHOULD
+mean Cloudwatch.
+
 ### Timeouts, limits, and dependencies
 
 Requests to a service SHOULD have explicit timeouts configured.
@@ -119,5 +132,10 @@ configured and be wrapped in a Circuit Breaker.
 
 ### Cloudformation and deploys
 
-AMIs MUST be built for each deploy, with any dependencies built
-in. This ensures startup (and so recovery times!) are quick.
+Apps MUST be packaged in some kind of container. At present this means
+RPMs, but it is likely to mean either DOCKER or AMIs in the near
+future.
+
+Cloudformation MUST be used to provision services. Deploys should be
+'one-click'. At the Guardian this currently means integration with our
+TeamCity build servers and Riff Raff - our deployment tool.
