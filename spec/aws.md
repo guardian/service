@@ -33,12 +33,17 @@ https://wblinks.com/notes/aws-tips-i-wish-id-known-before-i-started/).
 
 ### Tags
 
-Each EC2 instance MUST have the following tags:
+Every single AWS resource MUST have the following tags:
 
 * Stack
-* App
 * Stage
-* Name (equal to `[stage]:[app]`)
+
+Depending on the resource, additional tags should also be specified:
+
+* App
+
+Note, where the resource is used across stages, use 'INFRA' as the
+stage.
 
 ## Monitoring and alerting
 
